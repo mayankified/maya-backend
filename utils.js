@@ -2,7 +2,7 @@ import weaviate from "weaviate-ts-client";
 
 const client = weaviate.client({
   scheme: "http",
-  host: "localhost:8080",
+  host: "weaviate:8080",
 });
 const schemaConfig = {
   class: "Maya",
