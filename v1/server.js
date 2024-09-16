@@ -10,7 +10,7 @@ const port = 3000;
 
 const client = weaviate.client({
   scheme: "http",
-  host: "weaviate:8080",
+  host: "localhost:8080",
 });
 
 // const schemaConfig = {

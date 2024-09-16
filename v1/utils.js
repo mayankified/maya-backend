@@ -3,10 +3,9 @@ import weaviate from "weaviate-ts-client";
 const client = weaviate.client({
   scheme: "http",
   host: "localhost:8080",
-  // host: "weaviate:8080",
 });
 const schemaConfig = {
-  class: "Haya",
+  class: "Maya",
   vectorizer: "img2vec-neural",
   vectorIndexType: "hnsw",
   moduleConfig: {
