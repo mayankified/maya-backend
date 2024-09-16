@@ -3,11 +3,19 @@ import weaviate from "weaviate-ts-client";
 import cors from "cors";
 import multer from "multer";
 import axios from "axios";
-
+import { exec } from "child_process";
 const app = express();
 app.use(cors());
 const port = 3000;
 
+exec("node utils.js", (error, stdout, stderr) => {
+  if (error) {
+    console.error(`Error executing utils.js: ${error}`);
+    return;
+  }
+  console.log(`utils.js output: ${stdout}`);
+  if (stderr) console.error(`utils.js stderr: ${stderr}`);
+});
 const client = weaviate.client({
   scheme: "http",
   host: "localhost:8080",
@@ -101,8 +109,8 @@ app.post("/upload", async (req, res) => {
     const { imageUrl, text } = req.body;
 
     // Fetch the image from the provided URL
-    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-    const imageBuffer = Buffer.from(response.data, 'binary');
+    const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
+    const imageBuffer = Buffer.from(response.data, "binary");
 
     const result = await uploadImageToWeaviate(imageBuffer, text);
     res.status(200).json({ message: "Image uploaded successfully", result });
