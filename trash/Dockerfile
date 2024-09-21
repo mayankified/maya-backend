@@ -1,24 +1,27 @@
-# Use an official Node.js runtime as a parent image
-FROM node:18
-
-# Set the working directory in the container
-WORKDIR /usr/src/app
-
-# Copy package.json and package-lock.json if available
-COPY package*.json ./
+# Use a lightweight base image
+FROM ubuntu:20.04
 
 # Install dependencies
-RUN npm install --verbose
+RUN apt-get update && apt-get install -y \
+    curl \
+    supervisor
 
+# Download and set up Weaviate
+RUN curl -L https://cr.weaviate.io/semitechnologies/weaviate:1.26.4 -o /usr/local/bin/weaviate && \
+    chmod +x /usr/local/bin/weaviate
 
-# Copy the rest of the application code
-COPY . .
+# Download and set up img2vec-pytorch
+RUN curl -L https://cr.weaviate.io/semitechnologies/img2vec-pytorch:resnet50 -o /usr/local/bin/img2vec-pytorch && \
+    chmod +x /usr/local/bin/img2vec-pytorch
 
-# Run utils.js during the build
-RUN node utils.js
+# Create a directory for Weaviate data
+RUN mkdir -p /var/lib/weaviate
 
-# Expose the port the app runs on
-EXPOSE 3000
+# Copy the supervisor configuration file
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Command to start the server
-CMD [ "node", "server.js" ]
+# Expose necessary ports
+EXPOSE 8080 50051
+
+# Command to run supervisord
+CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

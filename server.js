@@ -10,9 +10,15 @@ const port = 3000;
 
 const client = weaviate.client({
   scheme: "http",
-  host: "weaviate:8080",
+  host: "localhost:8080",
 });
+// const client = weaviate.client({
+//   scheme: 'https',
+//   host: 'es6nljentvkn9ftwtpqsw.c0.asia-southeast1.gcp.weaviate.cloud',
+//   apiKey: 'reAV8TuH457Vx0Waq0hYoFEY8bNVrYz3nKox',
+// });
 
+console.log("Client created");
 // const schemaConfig = {
 //   class: "Maya",
 //   vectorizer: "img2vec-neural",
@@ -101,8 +107,8 @@ app.post("/upload", async (req, res) => {
     const { imageUrl, text } = req.body;
 
     // Fetch the image from the provided URL
-    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-    const imageBuffer = Buffer.from(response.data, 'binary');
+    const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
+    const imageBuffer = Buffer.from(response.data, "binary");
 
     const result = await uploadImageToWeaviate(imageBuffer, text);
     res.status(200).json({ message: "Image uploaded successfully", result });
