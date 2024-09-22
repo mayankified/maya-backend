@@ -3,6 +3,7 @@ import weaviate from "weaviate-ts-client";
 import cors from "cors";
 import multer from "multer";
 import axios from "axios";
+import sharp from "sharp";
 
 const app = express();
 app.use(cors());
@@ -55,10 +56,17 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
+async function compressImage(imageBuffer) {
+  return await sharp(imageBuffer)
+    .resize(500) // Resize image to a width of 500px, maintaining aspect ratio
+    .toBuffer();
+}
+
 // Function to upload image to Weaviate
 async function uploadImageToWeaviate(imageBuffer, text) {
   try {
     const b64 = imageBuffer.toString("base64");
+    console.log("Image converted to base64");
     const result = await client.data
       .creator()
       .withClassName("Maya")
@@ -67,7 +75,6 @@ async function uploadImageToWeaviate(imageBuffer, text) {
         text: text,
       })
       .do();
-
     console.log("Image uploaded to Weaviate:", result);
     return result;
   } catch (error) {
@@ -80,7 +87,7 @@ async function uploadImageToWeaviate(imageBuffer, text) {
 async function queryImage(imageBuffer) {
   try {
     const b64 = imageBuffer.toString("base64");
-
+    console.log("Image converted to base64");
     const resImage = await client.graphql
       .get()
       .withClassName("Maya")
@@ -88,7 +95,7 @@ async function queryImage(imageBuffer) {
       .withNearImage({ image: b64 })
       .withLimit(1)
       .do();
-
+    console.log("Image queried from Weaviate");
     const fetchedData = resImage.data.Get.Maya[0];
     const resultText = fetchedData.text;
 
@@ -110,7 +117,10 @@ app.post("/upload", async (req, res) => {
     const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
     const imageBuffer = Buffer.from(response.data, "binary");
 
-    const result = await uploadImageToWeaviate(imageBuffer, text);
+    const compressedImage = await compressImage(imageBuffer);
+    console.log("Image compressed");
+    console.log("Image fetched from URL");
+    const result = await uploadImageToWeaviate(compressedImage, text);
     res.status(200).json({ message: "Image uploaded successfully", result });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -121,8 +131,9 @@ app.post("/upload", async (req, res) => {
 app.post("/query", upload.single("image"), async (req, res) => {
   try {
     const imageBuffer = req.file.buffer;
-
-    const result = await queryImage(imageBuffer);
+    const compressedImage = await compressImage(imageBuffer);
+    console.log("Image compressed for query");
+    const result = await queryImage(compressedImage);
     res.status(200).json({ message: "Image queried successfully", result });
   } catch (error) {
     res.status(500).json({ error: error.message });
