@@ -136,9 +136,8 @@ async function queryImage(imageBuffer) {
 
 async function deleteImageById(objectId) {
   try {
-    const result = await client.data.deleter().withId(objectId).do();
-    console.log("Image deleted from Weaviate:", result);
-    return result;
+    await client.data.deleter().withId(objectId).do();
+    console.log("Image deleted from Weaviate");
   } catch (error) {
     console.error("Error deleting image from Weaviate:", error);
     throw new Error(`Error deleting image from Weaviate: ${error.message}`);
@@ -167,6 +166,7 @@ app.post("/upload", async (req, res) => {
 app.post("/delete", async (req, res) => {
   try {
     const { text } = req.body;
+    console.log("Text to delete:", text);
     const objectId = await getObjectIdbyText(text);
     const result = await deleteImageById(objectId);
     res.status(200).json({ message: "Image deleted successfully", result });
