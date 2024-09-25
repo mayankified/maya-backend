@@ -62,12 +62,12 @@ async function queryImage(imageUrl) {
 // Fetching all objects of a specific class
 client.graphql
   .get()
-  .withClassName('Maya') // Replace with your class name
-  .withFields(['_additional { id }', 'text']) // Specify fields you want to retrieve // Limit the number of results
+  .withClassName("Maya") // Replace with your class name
+  .withFields(["_additional { id }", "text"]) // Specify fields you want to retrieve // Limit the number of results
   .do()
-  .then(result => {
-    console.log('Fetched Data:', result.data.Get.Maya);
+  .then((result) => {
+    console.log("Fetched Data:", result.data.Get.Maya);
   })
-  .catch(error => {
-    console.error('Error fetching data:', error);
+  .catch((error) => {
+    console.error("Error fetching data:", error);
   });

@@ -19,7 +19,33 @@ const client = weaviate.client({
 //   apiKey: 'reAV8TuH457Vx0Waq0hYoFEY8bNVrYz3nKox',
 // });
 
-console.log("Client created");
+console.log("Client started");
+
+export async function getObjectIdbyText(text) {
+  try {
+    const res = await client.graphql
+      .get()
+      .withClassName("Maya")
+      .withFields(["_additional { id }"])
+      .withWhere({
+        path: ["text"],
+        operator: "Equal",
+        valueText: text,
+      })
+      .withLimit(1)
+      .do();
+
+    if (res.data.Get.Maya.length === 0) {
+      throw new Error("No object found with the given text");
+    }
+    const objectId = res.data.Get.Maya[0]._additional.id;
+    console.log("Object ID fetched from Weaviate:", objectId);
+    return objectId;
+  } catch (error) {
+    console.error("Error fetching object ID from Weaviate:", error);
+    throw new Error(`Error fetching object ID from Weaviate: ${error.message}`);
+  }
+}
 // const schemaConfig = {
 //   class: "Maya",
 //   vectorizer: "img2vec-neural",
@@ -108,6 +134,17 @@ async function queryImage(imageBuffer) {
   }
 }
 
+async function deleteImageById(objectId) {
+  try {
+    const result = await client.data.deleter().withId(objectId).do();
+    console.log("Image deleted from Weaviate:", result);
+    return result;
+  } catch (error) {
+    console.error("Error deleting image from Weaviate:", error);
+    throw new Error(`Error deleting image from Weaviate: ${error.message}`);
+  }
+}
+
 // Route to upload image using URL and text
 app.post("/upload", async (req, res) => {
   try {
@@ -122,6 +159,17 @@ app.post("/upload", async (req, res) => {
     console.log("Image fetched from URL");
     const result = await uploadImageToWeaviate(compressedImage, text);
     res.status(200).json({ message: "Image uploaded successfully", result });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/delete", async (req, res) => {
+  try {
+    const { text } = req.body;
+    const objectId = await getObjectIdbyText(text);
+    const result = await deleteImageById(objectId);
+    res.status(200).json({ message: "Image deleted successfully", result });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
