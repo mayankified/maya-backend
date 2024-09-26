@@ -117,17 +117,27 @@ async function queryImage(imageBuffer) {
     const resImage = await client.graphql
       .get()
       .withClassName("Maya")
-      .withFields(["image", "text"])
+      .withFields([
+        "image", 
+        "text", 
+        "_additional { certainty, distance }" // Include certainty and distance in the response
+      ])
       .withNearImage({ image: b64 })
       .withLimit(1)
       .do();
+      
     console.log("Image queried from Weaviate");
     const fetchedData = resImage.data.Get.Maya[0];
     const resultText = fetchedData.text;
+    const certaintyScore = fetchedData._additional.certainty;
+    const distanceScore = fetchedData._additional.distance;
 
-    console.log("Image fetched from Weaviate:", resultText);
+    console.log("Image fetched from Weaviate with similarity scores:");
+    console.log(`Text: ${resultText}`);
+    console.log(`Certainty: ${certaintyScore}`);
+    console.log(`Distance: ${distanceScore}`);
 
-    return { text: resultText };
+    return { text: resultText, certainty: certaintyScore, distance: distanceScore };
   } catch (error) {
     console.error("Error querying image in Weaviate:", error);
     throw new Error(`Error querying image in Weaviate: ${error.message}`);
