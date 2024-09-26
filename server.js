@@ -153,10 +153,10 @@ app.post("/upload", async (req, res) => {
     const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
     const imageBuffer = Buffer.from(response.data, "binary");
 
-    const compressedImage = await compressImage(imageBuffer);
-    console.log("Image compressed");
+    // const compressedImage = await compressImage(imageBuffer);
+    // console.log("Image compressed");
     console.log("Image fetched from URL");
-    const result = await uploadImageToWeaviate(compressedImage, text);
+    const result = await uploadImageToWeaviate(imageBuffer, text);
     res.status(200).json({ message: "Image uploaded successfully", result });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -179,9 +179,9 @@ app.post("/delete", async (req, res) => {
 app.post("/query", upload.single("image"), async (req, res) => {
   try {
     const imageBuffer = req.file.buffer;
-    const compressedImage = await compressImage(imageBuffer);
-    console.log("Image compressed for query");
-    const result = await queryImage(compressedImage);
+    // const compressedImage = await compressImage(imageBuffer);
+    // console.log("Image compressed for query");
+    const result = await queryImage(imageBuffer);
     res.status(200).json({ message: "Image queried successfully", result });
   } catch (error) {
     res.status(500).json({ error: error.message });
