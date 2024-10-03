@@ -134,7 +134,7 @@ async function deleteImageById(objectId) {
 }
 
 // Route to upload image using URL and text
-app.post("/upload", async (req, res) => {
+app.get("/upload", async (req, res) => {
   try {
     const { imageUrl, text } = req.body;
 

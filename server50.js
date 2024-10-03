@@ -3,7 +3,7 @@ import weaviate from "weaviate-ts-client";
 import cors from "cors";
 import multer from "multer";
 import axios from "axios";
-import sharp from "sharp";
+// import sharp from "sharp";
 
 const app = express();
 app.use(cors());
@@ -125,8 +125,9 @@ for (let i = 1; i <= 50; i++) {
   const className = `Aug${i}`;
 
   // Route to upload image using URL and text
-  app.post(`/${className}/upload`, async (req, res) => {
+  app.get(`/${className}/upload`, async (req, res) => {
     try {
+      console.log(`Route called: /${className}/upload`);
       const { imageUrl, text } = req.body;
 
       // Fetch the image from the provided URL
@@ -144,6 +145,7 @@ for (let i = 1; i <= 50; i++) {
   // Route to query image using file upload
   app.post(`/${className}/query`, upload.single("image"), async (req, res) => {
     try {
+      console.log(`Route called: /${className}/query`);
       const imageBuffer = req.file.buffer;
       const result = await queryImage(className, imageBuffer);
       res.status(200).json({ message: "Image queried successfully", result });
@@ -155,6 +157,7 @@ for (let i = 1; i <= 50; i++) {
   // Route to delete image by text
   app.post(`/${className}/delete`, async (req, res) => {
     try {
+      console.log(`Route called: /${className}/delete`);
       const { text } = req.body;
       console.log("Text to delete:", text);
       const objectId = await getObjectIdbyText(className, text);
@@ -167,6 +170,7 @@ for (let i = 1; i <= 50; i++) {
 }
 
 app.get("/", (req, res) => {
+  console.log("Route called: /");
   res.send("Hello World!");
 });
 
