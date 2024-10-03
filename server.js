@@ -46,27 +46,6 @@ export async function getObjectIdbyText(text) {
     throw new Error(`Error fetching object ID from Weaviate: ${error.message}`);
   }
 }
-// const schemaConfig = {
-//   class: "Maya",
-//   vectorizer: "img2vec-neural",
-//   vectorIndexType: "hnsw",
-//   moduleConfig: {
-//     "img2vec-neural": {
-//       imageFields: ["image"],
-//     },
-//   },
-//   properties: [
-//     {
-//       name: "image",
-//       dataType: ["blob"],
-//     },
-//     {
-//       name: "text",
-//       dataType: ["string"],
-//     },
-//   ],
-// };
-// await client.schema.classCreator().withClass(schemaConfig).do();
 
 // Set up multer for file uploads
 const storage = multer.memoryStorage();
