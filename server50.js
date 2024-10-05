@@ -125,7 +125,7 @@ for (let i = 1; i <= 50; i++) {
   const className = `Aug${i}`;
 
   // Route to upload image using URL and text
-  app.get(`/${className}/upload`, async (req, res) => {
+  app.post(`/${className}/upload`, async (req, res) => {
     try {
       console.log(`Route called: /${className}/upload`);
       const { imageUrl, text } = req.body;
