@@ -121,7 +121,7 @@ export async function getObjectIdbyText(className, text) {
 }
 
 // Loop to create routes for classes Aug1 to Aug50
-for (let i = 1; i <= 50; i++) {
+for (let i = 1; i <= 500; i++) {
   const className = `Aug${i}`;
 
   // Route to upload image using URL and text

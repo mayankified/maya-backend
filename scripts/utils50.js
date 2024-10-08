@@ -7,7 +7,7 @@ async function createClasses() {
   });
 
   // Loop to create classes Aug1 to Aug50
-  for (let i = 1; i <= 50; i++) {
+  for (let i = 1; i <= 500; i++) {
     const className = `Aug${i}`;
 
     // Schema configuration for each class
